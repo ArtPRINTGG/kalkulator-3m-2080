@@ -1,442 +1,636 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="pl" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Kalkulator – 3M Folia 2080</title>
+<title>3M 2080 — Konfigurator Folii</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{
-  --red:#CC2200;
-  --black:#111;
-  --gray:#f5f5f5;
-  --border:#e0e0e0;
-  --text:#1a1a1a;
-  --muted:#888;
-  --orange:#FF6600;
-  --radius:12px;
+:root {
+  --bg:       #f7f7f5;
+  --surface:  #ffffff;
+  --s2:       #f2f2f0;
+  --s3:       #e8e8e5;
+  --fg:       #111111;
+  --fg2:      #444444;
+  --fg3:      #888888;
+  --border:   #ddddd8;
+  --accent:   #cc2200;
+  --allegro:  #ff6600;
+  --blue:     #1a56db;
+  --radius:   10px;
+  --rcard:    14px;
+  --font:     'Epilogue', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow:   0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05);
 }
+[data-theme="dark"] {
+  --bg:      #111111;
+  --surface: #1c1c1c;
+  --s2:      #252525;
+  --s3:      #2e2e2e;
+  --fg:      #f0f0ee;
+  --fg2:     #b0b0aa;
+  --fg3:     #666660;
+  --border:  #333330;
+  --shadow:  0 1px 3px rgba(0,0,0,.3), 0 4px 12px rgba(0,0,0,.25);
+}
+
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{font-size:16px}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#e8e8e8;color:var(--text);min-height:100vh}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--fg);min-height:100vh;line-height:1.5;-webkit-font-smoothing:antialiased}
 
-/* CARD */
-.card{max-width:600px;margin:0 auto;background:#fff;min-height:100vh}
-@media(min-width:620px){.card{margin:1rem auto;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.12);min-height:auto}}
+/* ─── LAYOUT ─── */
+.app{max-width:1000px;margin:0 auto;padding:16px}
+.app-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding:0 2px}
+.header-left{display:flex;align-items:center;gap:10px}
+.badge{background:var(--accent);color:#fff;font-size:11px;font-weight:800;padding:4px 10px;border-radius:6px;letter-spacing:.5px}
+.header-title{font-size:18px;font-weight:700;color:var(--fg)}
+.header-sub{font-size:12px;color:var(--fg3);margin-top:1px}
+.theme-btn{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:13px;color:var(--fg2);font-family:var(--font);line-height:1}
 
-/* HEADER */
-.hdr{background:var(--black);color:#fff;padding:16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
-.badge-3m{background:var(--red);color:#fff;font-size:13px;font-weight:800;padding:6px 13px;border-radius:7px;letter-spacing:.5px;flex-shrink:0}
-.hdr-text h1{font-size:16px;font-weight:700;line-height:1.3}
-.hdr-text p{font-size:12px;opacity:.6;margin-top:2px}
+.grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:700px){.grid{grid-template-columns:1.1fr 0.9fr;align-items:start}}
 
-/* STEPS */
-.step{padding:20px 16px}
-.step+.step{border-top:8px solid #f0f0f0}
-.step-num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--black);color:#fff;border-radius:50%;font-size:13px;font-weight:700;flex-shrink:0;margin-right:8px}
-.step-title{font-size:17px;font-weight:700;display:flex;align-items:center;margin-bottom:16px}
+/* ─── CARDS ─── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rcard);box-shadow:var(--shadow)}
+.card-head{padding:14px 16px 0;display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:700;color:var(--fg);text-transform:uppercase;letter-spacing:.5px}
+.step-dot{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;background:var(--fg);color:var(--surface);border-radius:50%;font-size:10px;font-weight:700;margin-right:6px;flex-shrink:0}
 
-/* CATEGORY TABS */
-.cat-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none}
-.cat-scroll::-webkit-scrollbar{display:none}
-.cat-btn{flex-shrink:0;font-size:14px;font-weight:600;padding:10px 16px;border:2px solid var(--border);border-radius:24px;cursor:pointer;background:#fff;color:var(--muted);white-space:nowrap;transition:all .15s;min-height:44px;display:flex;align-items:center}
-.cat-btn.active{background:var(--black);color:#fff;border-color:var(--black)}
+/* ─── FINISH TABS ─── */
+.finish-tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;padding:12px 16px 0;border-bottom:1px solid var(--border)}
+.finish-tabs::-webkit-scrollbar{display:none}
+.ftab{flex-shrink:0;font-size:12px;font-weight:600;padding:7px 13px;border:none;background:none;color:var(--fg3);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;transition:all .15s;font-family:var(--font);white-space:nowrap}
+.ftab.active{color:var(--fg);border-bottom-color:var(--fg)}
 
-/* COLOR GRID – mobile: 2 cols, desktop: 3/4 cols */
-.color-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(min-width:440px){.color-grid{grid-template-columns:repeat(3,1fr)}}
-@media(min-width:560px){.color-grid{grid-template-columns:repeat(4,1fr)}}
+/* ─── COLOR GRID ─── */
+.color-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:8px;padding:14px 16px}
+.color-swatch{cursor:pointer;border-radius:8px;border:2px solid var(--border);overflow:hidden;transition:all .15s;position:relative;background:var(--s2)}
+.color-swatch:hover{border-color:var(--fg3);transform:translateY(-1px)}
+.color-swatch.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.swatch-dot{height:40px;width:100%;display:block}
+.swatch-code{font-size:8.5px;font-weight:700;color:var(--fg3);padding:3px 4px 4px;text-align:center;line-height:1.2;letter-spacing:.2px}
+.swatch-name{font-size:9px;color:var(--fg2);padding:0 4px 4px;text-align:center;line-height:1.1;display:none}
+.pop-badge{position:absolute;top:3px;left:3px;font-size:7.5px;font-weight:800;padding:2px 5px;border-radius:8px;letter-spacing:.2px;line-height:1.2}
+.pop-hot{background:var(--accent);color:#fff}
+.pop-pop{background:var(--allegro);color:#fff}
+.check-ico{position:absolute;top:3px;right:3px;width:16px;height:16px;background:var(--accent);border-radius:50%;display:none;align-items:center;justify-content:center}
+.check-ico svg{width:10px;height:10px}
+.color-swatch.sel .check-ico{display:flex}
 
-.color-tile{cursor:pointer;border-radius:12px;border:2.5px solid var(--border);overflow:hidden;transition:all .15s;position:relative;background:#f8f8f8;-webkit-user-select:none;user-select:none}
-.color-tile:active{transform:scale(.96);opacity:.9}
-.color-tile.sel{border-color:var(--red);box-shadow:0 0 0 2.5px var(--red)}
-/* min 80px image height */
-.color-tile img{width:100%;min-height:80px;aspect-ratio:4/3;object-fit:cover;display:block}
-.color-tile-body{padding:8px 9px 10px}
-.color-tile-id{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.3px}
-.color-tile-name{font-size:13px;font-weight:700;color:var(--text);line-height:1.25;margin-top:2px}
+/* ─── SELECTED PREVIEW ─── */
+.sel-preview{display:none;align-items:center;gap:12px;margin:0 16px 14px;padding:10px 12px;background:var(--s2);border-radius:var(--radius);border:1px solid var(--border)}
+.sel-dot{width:36px;height:36px;border-radius:6px;flex-shrink:0;border:1px solid var(--border)}
+.sel-info .sel-name{font-size:13px;font-weight:700}
+.sel-info .sel-cat{font-size:11px;color:var(--fg3);margin-top:1px}
 
-/* BADGES */
-.badge{position:absolute;top:7px;left:7px;font-size:10px;font-weight:800;padding:4px 8px;border-radius:12px;letter-spacing:.3px;line-height:1}
-.badge-hot{background:#cc2200;color:#fff}
-.badge-pop{background:#ff6600;color:#fff}
-.badge-trend{background:#1a6ecc;color:#fff}
-.check-badge{position:absolute;top:7px;right:7px;width:24px;height:24px;background:var(--red);border-radius:50%;display:none;align-items:center;justify-content:center}
-.check-badge svg{width:14px;height:14px}
-.color-tile.sel .check-badge{display:flex}
+/* ─── DIMENSIONS ─── */
+.dim-section{padding:14px 16px}
+.dim-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;font-weight:700;color:var(--fg3);text-transform:uppercase;letter-spacing:.4px}
+.field-input-wrap{position:relative;display:flex;align-items:center}
+.field-input{width:100%;padding:10px 38px 10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:16px;font-weight:600;font-family:var(--font);background:var(--s2);color:var(--fg);outline:none;-webkit-appearance:none;appearance:none;transition:border-color .15s}
+.field-input:focus{border-color:var(--fg);background:var(--surface)}
+.field-unit{position:absolute;right:10px;font-size:12px;font-weight:600;color:var(--fg3);pointer-events:none}
+.width-note{font-size:11px;color:var(--fg3);margin-top:3px;line-height:1.4}
 
-/* SELECTED STRIP */
-.sel-strip{display:none;align-items:center;gap:14px;background:#fff8f8;border:2px solid #ffcccc;border-radius:12px;padding:12px 14px;margin-top:14px}
-.sel-strip img{width:64px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--border);flex-shrink:0}
-.sel-strip-name{font-size:15px;font-weight:700}
-.sel-strip-cat{font-size:12px;color:var(--muted);margin-top:2px}
+/* ─── LENGTH SLIDER ─── */
+.len-display{text-align:center;padding:12px;background:var(--s2);border-radius:var(--radius);margin-bottom:12px}
+.len-big{font-size:48px;font-weight:900;color:var(--fg);line-height:1;letter-spacing:-1px}
+.len-unit-txt{font-size:18px;font-weight:600;color:var(--fg3)}
+.len-sub{font-size:11px;color:var(--fg3);margin-top:3px}
+input[type=range]{-webkit-appearance:none;width:100%;height:6px;background:var(--s3);border-radius:3px;outline:none;cursor:pointer;margin-bottom:10px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:32px;height:32px;background:var(--fg);border-radius:50%;cursor:pointer;border:3px solid var(--surface);box-shadow:0 1px 6px rgba(0,0,0,.2)}
+input[type=range]::-moz-range-thumb{width:32px;height:32px;background:var(--fg);border-radius:50%;cursor:pointer;border:3px solid var(--surface);box-shadow:0 1px 6px rgba(0,0,0,.2)}
+.presets{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.preset{font-size:12px;font-weight:700;padding:9px 0;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;background:var(--surface);color:var(--fg3);text-align:center;font-family:var(--font);transition:all .12s;-webkit-user-select:none;user-select:none}
+.preset:active{transform:scale(.95)}
+.preset.ap{background:var(--fg);color:var(--surface);border-color:var(--fg)}
 
-/* LENGTH STEP */
-.len-display{text-align:center;margin:4px 0 18px;background:var(--gray);border-radius:12px;padding:14px 12px}
-.len-big{font-size:56px;font-weight:900;color:var(--black);line-height:1}
-.len-unit{font-size:22px;font-weight:700;color:var(--muted);margin-left:2px}
-.len-sub{font-size:13px;color:var(--muted);margin-top:5px}
+/* ─── PRICE SUMMARY ─── */
+.price-section{padding:14px 16px}
+.price-group{font-size:11px;color:var(--fg3);font-weight:600;letter-spacing:.3px;text-transform:uppercase;margin-bottom:10px}
+.price-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.pmet{background:var(--s2);border-radius:var(--radius);padding:10px 12px;border:1px solid var(--border)}
+.pmet .pl{font-size:10px;color:var(--fg3);font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px}
+.pmet .pv{font-size:16px;font-weight:700}
+.pmet .ps{font-size:10px;color:var(--fg3);margin-top:1px}
 
-/* RANGE SLIDER – 32px thumb */
-.slider-wrap{position:relative;margin-bottom:20px;padding:4px 0}
-input[type=range]{
-  -webkit-appearance:none;
-  width:100%;
-  height:8px;
-  background:var(--border);
-  border-radius:4px;
-  outline:none;
-  cursor:pointer;
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width:36px;height:36px;
-  background:var(--black);
-  border-radius:50%;
-  cursor:pointer;
-  border:4px solid #fff;
-  box-shadow:0 2px 8px rgba(0,0,0,.25);
-}
-input[type=range]::-moz-range-thumb{
-  width:36px;height:36px;
-  background:var(--black);
-  border-radius:50%;
-  cursor:pointer;
-  border:4px solid #fff;
-  box-shadow:0 2px 8px rgba(0,0,0,.25);
-}
-input[type=range]::-webkit-slider-runnable-track{
-  height:8px;border-radius:4px;
-}
+/* ─── ALLEGRO BOX ─── */
+.allegro-box{border-radius:var(--rcard);overflow:hidden;margin:0 16px 16px}
+.al-bar{background:var(--fg);padding:10px 14px;display:flex;align-items:center;gap:8px}
+.al-badge{background:var(--allegro);color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:5px;letter-spacing:.3px}
+.al-bar-txt{color:rgba(255,255,255,.75);font-size:11px;font-weight:500}
+.al-main{background:var(--allegro);padding:16px 14px 14px}
+.al-main.dim{background:#aaaaaa}
+.al-lbl{font-size:10px;font-weight:800;color:rgba(255,255,255,.7);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
+.al-num{font-size:72px;font-weight:900;color:#fff;line-height:1;letter-spacing:-2px}
+.al-sub{font-size:12px;color:rgba(255,255,255,.8);margin-top:5px;line-height:1.5}
+.al-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 14px;background:#e05500}
+.al-main.dim ~ .al-stats{background:#999}
+.al-stat{background:rgba(255,255,255,.15);border-radius:8px;padding:8px 10px}
+.al-stat .al{font-size:9px;color:rgba(255,255,255,.7);font-weight:700;letter-spacing:.3px;text-transform:uppercase;margin-bottom:2px}
+.al-stat .av{font-size:18px;font-weight:800;color:#fff}
 
-/* PRESET GRID */
-.preset-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.preset-btn{
-  font-size:14px;font-weight:700;
-  padding:0;height:52px;
-  border:2px solid var(--border);
-  border-radius:10px;
-  cursor:pointer;
-  background:#fff;
-  color:var(--muted);
-  text-align:center;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .12s;
-  -webkit-user-select:none;user-select:none;
-}
-.preset-btn:active{transform:scale(.94)}
-.preset-btn.ap{background:var(--black);color:#fff;border-color:var(--black)}
+/* ─── ALLEGRO BUTTON ─── */
+.btn-allegro{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:var(--allegro);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s;-webkit-user-select:none;user-select:none;margin:0 16px 16px;width:calc(100% - 32px)}
+.btn-allegro:active{transform:scale(.98);opacity:.9}
+.btn-allegro.dim{background:#aaa;cursor:default}
+.btn-allegro svg{width:18px;height:18px;flex-shrink:0}
 
-/* ALLEGRO RESULT BOX */
-.allegro-result{margin:0 16px 4px;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08)}
-.al-top-bar{background:var(--black);padding:13px 16px;display:flex;align-items:center;gap:10px}
-.al-logo{background:var(--orange);color:#fff;font-size:11px;font-weight:800;padding:4px 10px;border-radius:6px;letter-spacing:.3px}
-.al-top-bar span{color:#fff;font-size:13px;font-weight:500;opacity:.85}
-.al-main{background:var(--orange);padding:20px 16px 16px}
-.al-main.inactive{background:#ccc}
-.al-units-label{font-size:12px;font-weight:700;color:rgba(255,255,255,.8);letter-spacing:.6px;text-transform:uppercase;margin-bottom:6px}
-.al-units-num{font-size:80px;font-weight:900;color:#fff;line-height:1;letter-spacing:-2px}
-.al-units-sub{font-size:14px;color:rgba(255,255,255,.85);margin-top:8px;line-height:1.5}
-.al-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px;background:#E55800}
-.al-main.inactive~.al-stats{background:#bbb}
-.al-stat{background:rgba(255,255,255,.18);border-radius:10px;padding:11px 13px}
-.al-stat-label{font-size:11px;color:rgba(255,255,255,.75);font-weight:600;margin-bottom:3px;letter-spacing:.2px}
-.al-stat-val{font-size:20px;font-weight:800;color:#fff}
+/* ─── COPY SECTION ─── */
+.copy-wrap{margin:0 16px 14px}
+.copy-label{font-size:10px;font-weight:700;color:var(--fg3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.copy-box{display:flex;gap:8px;align-items:stretch;background:var(--s2);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.copy-text{flex:1;padding:9px 11px;font-size:11px;color:var(--fg2);line-height:1.5;font-family:monospace;min-height:44px;display:flex;align-items:center}
+.copy-btn{flex-shrink:0;padding:0 14px;border:none;border-left:1px solid var(--border);background:var(--surface);color:var(--fg);font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .12s;white-space:nowrap}
+.copy-btn.done{background:var(--fg);color:var(--surface)}
 
-/* ORDER DETAILS */
-.details{margin:16px 16px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.det-card{background:var(--gray);border-radius:12px;padding:12px 12px;border:1px solid var(--border)}
-.det-label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
-.det-val{font-size:16px;font-weight:700}
-.det-sub{font-size:11px;color:var(--muted);margin-top:2px}
+/* ─── HOW TO ─── */
+.howto{margin:0 16px 16px;padding:12px 14px;background:var(--s2);border-radius:var(--radius);border:1px solid var(--border)}
+.howto-title{font-size:11px;font-weight:700;color:var(--fg2);margin-bottom:7px}
+.howto ol{padding-left:1rem}
+.howto li{font-size:12px;color:var(--fg3);line-height:1.75}
+.howto strong{font-weight:700;color:var(--fg2)}
 
-/* COPY BOX */
-.copy-wrap{margin:16px 16px 0}
-.copy-label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
-.copy-box{background:var(--gray);border:1.5px solid var(--border);border-radius:12px;overflow:hidden}
-.copy-text{padding:12px 14px;font-size:14px;color:var(--text);line-height:1.6;font-family:monospace;min-height:60px;display:block}
-.copy-btn-row{padding:0 14px 12px;display:flex;justify-content:flex-end}
-.copy-btn{font-size:14px;font-weight:700;padding:11px 20px;border:2px solid var(--border);border-radius:9px;cursor:pointer;background:#fff;color:var(--text);min-height:44px;transition:all .15s}
-.copy-btn.copied{background:var(--black);color:#fff;border-color:var(--black)}
+/* ─── FOOTER ─── */
+.footer{display:flex;flex-wrap:wrap;gap:4px 14px;padding:0 2px 20px;margin-top:6px}
+.footer span{font-size:11px;color:var(--fg3)}
 
-/* HOW TO ORDER */
-.howto{margin:16px 16px 16px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:12px;padding:16px}
-.howto-title{font-size:13px;font-weight:800;color:#92400e;margin-bottom:10px;display:flex;align-items:center;gap:7px}
-.howto ol{padding-left:1.2rem}
-.howto li{font-size:14px;color:#78350f;line-height:1.9}
-.howto strong{font-weight:700}
-
-/* FOOTER */
-.footer{background:#f8f8f8;border-top:1px solid var(--border);padding:14px 16px;display:flex;flex-wrap:wrap;gap:6px 14px}
-.footer span{font-size:12px;color:var(--muted)}
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,-16px);opacity:0;background:var(--fg);color:var(--surface);font-size:13px;font-weight:600;font-family:var(--font);padding:10px 20px;border-radius:10px;pointer-events:none;z-index:999;white-space:nowrap;transition:none}
+.toast.show{animation:toastAnim 2.5s ease forwards}
+@keyframes toastAnim{0%{transform:translate(-50%,-16px);opacity:0}10%{transform:translate(-50%,0);opacity:1}80%{transform:translate(-50%,0);opacity:1}100%{transform:translate(-50%,-16px);opacity:0}}
 </style>
 </head>
 <body>
-<div class="card">
+
+<div class="app">
 
   <!-- HEADER -->
-  <div class="hdr">
-    <div class="badge-3m">3M</div>
-    <div class="hdr-text">
-      <h1>Folia samochodowa seria 2080</h1>
-      <p>Kalkulator ceny · Allegro / eBay</p>
-    </div>
-  </div>
-
-  <!-- STEP 1: KOLOR -->
-  <div class="step">
-    <div class="step-title"><span class="step-num">1</span>Wybierz kolor folii</div>
-    <div class="cat-scroll" id="cats"></div>
-    <div class="color-grid" id="grid"></div>
-    <div class="sel-strip" id="selStrip">
-      <img id="stripImg" src="" alt="">
+  <div class="app-header">
+    <div class="header-left">
+      <div class="badge">3M</div>
       <div>
-        <div class="sel-strip-name" id="stripName">—</div>
-        <div class="sel-strip-cat" id="stripCat">—</div>
+        <div class="header-title">Konfigurator Folii 2080</div>
+        <div class="header-sub">Kalkulator ceny · Allegro / eBay</div>
       </div>
     </div>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
   </div>
 
-  <!-- STEP 2: DŁUGOŚĆ -->
-  <div class="step">
-    <div class="step-title"><span class="step-num">2</span>Wybierz długość</div>
-    <div class="len-display">
-      <div class="len-big" id="lenBig">100<span class="len-unit"> cm</span></div>
-      <div class="len-sub">Szerokość rolki: 152 cm · cięcie co 10 cm</div>
-    </div>
-    <div class="slider-wrap">
-      <input type="range" id="sl" min="1" max="100" value="10" step="1">
-    </div>
-    <div class="preset-grid">
-      <div class="preset-btn" data-v="5">0,5 m</div>
-      <div class="preset-btn ap" data-v="10">1 m</div>
-      <div class="preset-btn" data-v="20">2 m</div>
-      <div class="preset-btn" data-v="30">3 m</div>
-      <div class="preset-btn" data-v="50">5 m</div>
-      <div class="preset-btn" data-v="75">7,5 m</div>
-      <div class="preset-btn" data-v="100">10 m</div>
-    </div>
-  </div>
+  <div class="grid">
 
-  <!-- ALLEGRO RESULT -->
-  <div class="allegro-result">
-    <div class="al-top-bar">
-      <div class="al-logo">allegro</div>
-      <span>Liczba sztuk do dodania do koszyka</span>
-    </div>
-    <div class="al-main inactive" id="alMain">
-      <div class="al-units-label">Liczba jednostek</div>
-      <div class="al-units-num" id="alNum">—</div>
-      <div class="al-units-sub" id="alSub">Wybierz kolor i długość, aby zobaczyć wynik</div>
-    </div>
-    <div class="al-stats" id="alStats">
-      <div class="al-stat"><div class="al-stat-label">Cena jednostki</div><div class="al-stat-val">3,00 zł</div></div>
-      <div class="al-stat"><div class="al-stat-label">Łączna kwota</div><div class="al-stat-val" id="alTotal">— zł</div></div>
-    </div>
-  </div>
+    <!-- COL LEFT: COLOR PICKER -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title"><span class="step-dot">1</span>Wybierz kolor</div>
+      </div>
 
-  <!-- DETAILS -->
-  <div class="details">
-    <div class="det-card">
-      <div class="det-label">Wymiary</div>
-      <div class="det-val" id="detDim">152×100 cm</div>
-      <div class="det-sub">szer. × dług.</div>
-    </div>
-    <div class="det-card">
-      <div class="det-label">Powierzchnia</div>
-      <div class="det-val" id="detArea">1,52 m²</div>
-    </div>
-    <div class="det-card">
-      <div class="det-label">Cena brutto</div>
-      <div class="det-val" id="detGross">— zł</div>
-      <div class="det-sub" id="detNet">netto: — zł</div>
-    </div>
-  </div>
+      <div class="finish-tabs" id="finishTabs"></div>
+      <div class="color-grid" id="colorGrid"></div>
 
-  <!-- COPY BOX -->
-  <div class="copy-wrap">
-    <div class="copy-label">Wiadomość do sprzedawcy</div>
-    <div class="copy-box">
-      <div class="copy-text" id="copyText">Wybierz kolor i długość, aby wygenerować treść wiadomości do sprzedawcy.</div>
-      <div class="copy-btn-row">
-        <button class="copy-btn" id="copyBtn" onclick="doCopy()">Kopiuj wiadomość</button>
+      <div class="sel-preview" id="selPreview">
+        <div class="sel-dot" id="selDot"></div>
+        <div class="sel-info">
+          <div class="sel-name" id="selName">—</div>
+          <div class="sel-cat" id="selCat">—</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- HOW TO -->
-  <div class="howto">
-    <div class="howto-title">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      Jak złożyć zamówienie na Allegro?
-    </div>
-    <ol>
-      <li>Wybierz <strong>kolor</strong> i <strong>długość</strong> w kalkulatorze powyżej.</li>
-      <li>Na Allegro dodaj produkt do koszyka i ustaw ilość na <strong id="hintUnits">podaną liczbę jednostek</strong>.</li>
-      <li>Skopiuj wiadomość powyżej i wyślij ją do sprzedawcy w uwagach do zamówienia.</li>
-    </ol>
-  </div>
+    <!-- COL RIGHT: DIMENSIONS + SUMMARY -->
+    <div style="display:flex;flex-direction:column;gap:16px">
 
-  <!-- FOOTER -->
+      <!-- DIMENSIONS -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title"><span class="step-dot">2</span>Wymiary</div>
+        </div>
+        <div class="dim-section">
+          <div class="len-display">
+            <div><span class="len-big" id="lenBig">100</span><span class="len-unit-txt"> cm</span></div>
+            <div class="len-sub">długość · cięcie co 10 cm</div>
+          </div>
+          <input type="range" id="slider" min="1" max="100" value="10" step="1">
+          <div class="presets" id="presets">
+            <div class="preset" data-v="5">50 cm</div>
+            <div class="preset ap" data-v="10">1 m</div>
+            <div class="preset" data-v="15">1,5 m</div>
+            <div class="preset" data-v="20">2 m</div>
+            <div class="preset" data-v="30">3 m</div>
+            <div class="preset" data-v="50">5 m</div>
+            <div class="preset" data-v="75">7,5 m</div>
+            <div class="preset" data-v="100">10 m</div>
+          </div>
+          <div class="width-note" style="margin-top:10px">
+            <strong style="color:var(--fg2)">Szerokość rolki: 152 cm</strong> — cena naliczana za pełny metr bieżący niezależnie od wybranej szerokości cięcia
+          </div>
+        </div>
+      </div>
+
+      <!-- PRICE SUMMARY -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title"><span class="step-dot">3</span>Podsumowanie</div>
+        </div>
+        <div class="price-section">
+          <div class="price-group" id="priceGroup">Wybierz kolor aby zobaczyć wycenę</div>
+          <div class="price-row2">
+            <div class="pmet">
+              <div class="pl">Wymiary</div>
+              <div class="pv" id="pDim">152 × 100 cm</div>
+              <div class="ps">szer. × dług.</div>
+            </div>
+            <div class="pmet">
+              <div class="pl">Powierzchnia</div>
+              <div class="pv" id="pArea">1,52 m²</div>
+            </div>
+            <div class="pmet">
+              <div class="pl">Cena netto</div>
+              <div class="pv" id="pNetto">— zł</div>
+              <div class="ps">bez VAT</div>
+            </div>
+            <div class="pmet">
+              <div class="pl">Cena brutto</div>
+              <div class="pv" id="pBrutto">— zł</div>
+              <div class="ps">z VAT 23%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ALLEGRO BOX -->
+        <div class="allegro-box">
+          <div class="al-bar">
+            <div class="al-badge">allegro</div>
+            <div class="al-bar-txt">Liczba sztuk do koszyka</div>
+          </div>
+          <div class="al-main dim" id="alMain">
+            <div class="al-lbl">Liczba jednostek</div>
+            <div class="al-num" id="alNum">—</div>
+            <div class="al-sub" id="alSub">Wybierz kolor i długość</div>
+          </div>
+          <div class="al-stats" id="alStats">
+            <div class="al-stat"><div class="al">Cena jednostki</div><div class="av">3,00 zł</div></div>
+            <div class="al-stat"><div class="al">Do zapłaty</div><div class="av" id="alTotal">— zł</div></div>
+          </div>
+        </div>
+
+        <!-- GO TO LISTING BUTTON -->
+        <button class="btn-allegro dim" id="btnAllegro" onclick="goToListing()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          Przejdź do oferty na Allegro
+        </button>
+
+        <!-- COPY MESSAGE -->
+        <div class="copy-wrap">
+          <div class="copy-label">Wiadomość do sprzedawcy</div>
+          <div class="copy-box">
+            <div class="copy-text" id="copyText">Wybierz kolor i długość, aby wygenerować wiadomość.</div>
+            <button class="copy-btn" id="copyBtn" onclick="doCopy()">Kopiuj</button>
+          </div>
+        </div>
+
+        <!-- HOW TO -->
+        <div class="howto">
+          <div class="howto-title">Jak złożyć zamówienie?</div>
+          <ol>
+            <li>Wybierz <strong>kolor</strong> i <strong>długość</strong> powyżej.</li>
+            <li>Kliknij <strong>Przejdź do oferty</strong> — liczba jednostek skopiuje się do schowka automatycznie.</li>
+            <li>Na Allegro ustaw ilość na <strong id="hintUnits">podaną liczbę jednostek</strong>.</li>
+            <li>W uwagach podaj: <strong>kod koloru</strong> i <strong>długość w cm</strong>.</li>
+          </ol>
+        </div>
+
+      </div><!-- end card right -->
+    </div><!-- end col right -->
+  </div><!-- end grid -->
+
   <div class="footer">
-    <span>Szerokość: 152 cm</span>
+    <span>Szerokość rolki: 152 cm</span>
     <span>Cięcie co 10 cm</span>
-    <span>Dostawa: bezpłatna</span>
-    <span>Realizacja: 2–4 dni</span>
+    <span>Dostawa: bezpłatna w Polsce</span>
+    <span>Realizacja: 2–4 dni robocze</span>
     <span>1 jednostka = 3,00 zł</span>
   </div>
 
-</div><!-- end card -->
-<script>
-const B='https://print.gg/app/uploads/';
+</div><!-- end app -->
 
-const colors={
-  "Popularne":[
-    {id:"G12",  name:"Black Gloss",    img:B+"2024/07/1_2080_g12_3M.jpg",    hex:"#1a1a1a", badge:"hot",  bLabel:"BESTSELLER", reviews:908},
-    {id:"M12",  name:"Black Matte",    img:B+"2024/07/9_2080_m12_3M.jpg",    hex:"#1C1C1C", badge:"pop",  bLabel:"POPULARNY",  reviews:62},
-    {id:"M261", name:"Dark Gray Matte",img:B+"2024/07/19_2080_m261_3M.jpg",  hex:"#555",    badge:"pop",  bLabel:"POPULARNY",  reviews:48},
-    {id:"G10",  name:"White Gloss",    img:B+"2024/07/20_2080_g10_3M.jpg",   hex:"#F0EDE8", badge:"trend",bLabel:"POPULARNY",  reviews:11},
-  ],
-  "Wysoki połysk":[
-    {id:"HG12", name:"Black",          img:B+"2024/08/6_2080_hg12_3M.jpg",   hex:"#111"},
-    {id:"HG13", name:"Hot Rod Red",    img:B+"2024/07/26_2080_hg_13_3M.jpg", hex:"#CC2200"},
-    {id:"HG77", name:"Sky Blue",       img:B+"2024/07/17_2080_hg77_3M.jpg",  hex:"#5599DD"}
-  ],
-  "Połysk":[
-    {id:"G12",   name:"Black",              img:B+"2024/07/1_2080_g12_3M.jpg",    hex:"#1a1a1a", badge:"hot",bLabel:"BESTSELLER"},
-    {id:"G10",   name:"White",              img:B+"2024/07/20_2080_g10_3M.jpg",   hex:"#F0EDE8"},
-    {id:"G31",   name:"Storm Gray",         img:B+"2024/07/2_2080_g31_3M.jpg",    hex:"#888"},
-    {id:"G25",   name:"Sun Flower",         img:B+"2024/07/3_2080_G25_3M.jpg",    hex:"#FFD700"},
-    {id:"GP240", name:"White Gold Sparkle", img:B+"2024/08/5_2080_gp_240_3M.jpg", hex:"#E8D8A0"},
-    {id:"G24",   name:"Deep Orange",        img:B+"2024/07/7_2080_g24_3M.jpg",    hex:"#FF5500"},
-    {id:"G217",  name:"Deep Blue Metallic", img:B+"2024/07/21_2080_g217_3M.jpg",  hex:"#1A3A6E"},
-    {id:"G16",   name:"Light Green",        img:B+"2024/07/25_2080_g16_3M.jpg",   hex:"#66BB44"},
-    {id:"G201",  name:"Anthracite",         img:B+"2024/07/27_2080_g201_3M.jpg",  hex:"#3A3A3A"},
-    {id:"G337",  name:"Blue Fire",          img:B+"2024/07/18_2080_g337_3M.jpg",  hex:"#2244CC"},
-    {id:"G13",   name:"Hot Rod Red",        img:B+"2024/07/14_2080_g13_3M.jpg",   hex:"#CC2200"},
-    {id:"GP258", name:"Plum Explosion",     img:B+"2024/07/15_2080_gp258_3M.jpg", hex:"#6600AA"}
-  ],
-  "Matowy":[
-    {id:"M12",  name:"Black",              img:B+"2024/07/9_2080_m12_3M.jpg",   hex:"#1C1C1C", badge:"pop",bLabel:"POPULARNY"},
-    {id:"M22",  name:"Deep Black",         img:B+"2024/07/16_2080_m22_3M.jpg",  hex:"#0D0D0D"},
-    {id:"M261", name:"Dark Gray",          img:B+"2024/07/19_2080_m261_3M.jpg", hex:"#555",    badge:"pop",bLabel:"POPULARNY"},
-    {id:"M206", name:"Pine Green Metallic",img:B+"2024/07/13_2080_m206_3M.jpg", hex:"#2D5A3D"}
-  ],
-  "Satyna":[
-    {id:"S12",   name:"Black",       img:B+"2024/07/12_2080_s12_3M.jpg",  hex:"#222"},
-    {id:"S347",  name:"Perfect Blue",img:B+"2024/07/23_2080_s347_3M.jpg", hex:"#2266BB"},
-    {id:"SP273", name:"Vampire Red", img:B+"2024/07/11_2080_sp273_3M.jpg",hex:"#880011"}
-  ],
-  "Tekstura":[
-    {id:"CFS12",name:"Carbon Fiber Black",img:B+"2024/07/4_2080_cfs12_3M.jpg",  hex:"#1a1a1a"},
-    {id:"BR120",name:"Brushed Aluminium", img:B+"2024/07/28_2080_br120_3M.jpg", hex:"#C0C0C0"},
-    {id:"BR201",name:"Brushed Steel",     img:B+"2024/07/8_2080_br202_3M.jpg",  hex:"#A8A8B0"}
-  ],
-  "Color Flip":[
-    {id:"SP281",name:"Satin Flip Psychedelic",img:B+"2024/07/22_2080_sp281_3M.jpg",hex:"#7B2FBE"}
-  ]
+<div class="toast" id="toast"></div>
+
+<script>
+/* ─── PRICE GROUPS (netto/m², źródło: cennik Integart "Cena przy zakupie na mb") ─── */
+const GROUPS = {
+  standard: { netto_m2: 81.58,  label: 'Gloss / Matte / Satin Standard' },
+  hg:       { netto_m2: 118.28, label: 'High Gloss' },
+  pearl:    { netto_m2: 97.51,  label: 'Pearl Premium / Satin Premium' },
+  flip:     { netto_m2: 157.19, label: 'Satin Flip / Gloss Flip' },
+  carbon:   { netto_m2: 160.20, label: 'Carbon / Texture / Brushed' },
+  wrap1080: { netto_m2: 104.64, label: '1080 Series Pearl' },
+};
+const ROLL_W = 1.524; /* 152.4 cm */
+const VAT    = 0.23;
+const UNIT   = 3.00;
+const ALLEGRO_URL = 'https://allegro.pl/oferta/folia-samochodowa-3m-2080-na-wymiar-18688557855';
+const IMG_BASE = 'https://print.gg/app/uploads/';
+
+/* ─── COLORS — wszystkie kody z cennika ─── */
+const COLORS = [
+  /* HIGH GLOSS */
+  {code:'HG10', name:'White',             hex:'#f2f0ee', finish:'High Gloss',   group:'hg'},
+  {code:'HG12', name:'Black',             hex:'#111111', finish:'High Gloss',   group:'hg', pop:'hot'},
+  {code:'HG13', name:'Hot Rod Red',       hex:'#b3141f', finish:'High Gloss',   group:'hg'},
+  {code:'HG14', name:'Burnt Orange',      hex:'#c4521d', finish:'High Gloss',   group:'hg'},
+  {code:'HG15', name:'Bright Yellow',     hex:'#f6cf00', finish:'High Gloss',   group:'hg'},
+  {code:'HG31', name:'Storm Gray',        hex:'#6e7378', finish:'High Gloss',   group:'hg'},
+  {code:'HG36', name:'Mantis Gray',       hex:'#858b8f', finish:'High Gloss',   group:'hg'},
+  {code:'HG61', name:'Nardo Gray',        hex:'#898b8e', finish:'High Gloss',   group:'hg'},
+  {code:'HG77', name:'Sky Blue',          hex:'#3f86c4', finish:'High Gloss',   group:'hg'},
+  {code:'HG120',name:'White Aluminium',   hex:'#d4d4d2', finish:'High Gloss',   group:'hg'},
+  {code:'HG212',name:'Black Metallic',    hex:'#1a1a28', finish:'High Gloss',   group:'hg'},
+  {code:'HG278',name:'Flip Deep',         hex:'#1a1a40', finish:'High Gloss',   group:'hg'},
+  {code:'HG336',name:'Green Envy',        hex:'#1c7a42', finish:'High Gloss',   group:'hg'},
+  {code:'HG378',name:'Blue Raspberry',    hex:'#2244aa', finish:'High Gloss',   group:'hg'},
+
+  /* GLOSS */
+  {code:'G10',  name:'White',             hex:'#f1f1ef', finish:'Gloss',        group:'standard'},
+  {code:'G12',  name:'Black',             hex:'#16181c', finish:'Gloss',        group:'standard', pop:'hot', img:'2024/07/1_2080_g12_3M.jpg'},
+  {code:'G13',  name:'Hot Rod Red',       hex:'#cc2200', finish:'Gloss',        group:'standard', img:'2024/07/14_2080_g13_3M.jpg'},
+  {code:'G14',  name:'Burnt Orange',      hex:'#c4521d', finish:'Gloss',        group:'standard'},
+  {code:'G15',  name:'Bright Yellow',     hex:'#f6cf00', finish:'Gloss',        group:'standard'},
+  {code:'G16',  name:'Light Green',       hex:'#76b04a', finish:'Gloss',        group:'standard', img:'2024/07/25_2080_g16_3M.jpg'},
+  {code:'G24',  name:'Deep Orange',       hex:'#e84f1c', finish:'Gloss',        group:'standard', img:'2024/07/7_2080_g24_3M.jpg'},
+  {code:'G25',  name:'Sunflower Yellow',  hex:'#f4b81f', finish:'Gloss',        group:'standard', img:'2024/07/3_2080_G25_3M.jpg'},
+  {code:'G31',  name:'Storm Gray',        hex:'#6e7378', finish:'Gloss',        group:'standard', img:'2024/07/2_2080_g31_3M.jpg'},
+  {code:'G46',  name:'Kelly Green',       hex:'#1c7a42', finish:'Gloss',        group:'standard'},
+  {code:'G47',  name:'Intense Blue',      hex:'#1f3f78', finish:'Gloss',        group:'standard'},
+  {code:'G53',  name:'Flame Red',         hex:'#c2161f', finish:'Gloss',        group:'standard'},
+  {code:'G54',  name:'Bright Orange',     hex:'#ff6600', finish:'Gloss',        group:'standard'},
+  {code:'G55',  name:'Lucid Yellow',      hex:'#d9cf3a', finish:'Gloss',        group:'standard'},
+  {code:'G77',  name:'Sky Blue',          hex:'#5599dd', finish:'Gloss',        group:'standard'},
+  {code:'G79',  name:'Light Ivory',       hex:'#e9e3d2', finish:'Gloss',        group:'standard'},
+  {code:'G120', name:'White Aluminum',    hex:'#d4d4d4', finish:'Gloss',        group:'standard'},
+  {code:'G127', name:'Boat Blue',         hex:'#22406e', finish:'Gloss',        group:'standard'},
+  {code:'G201', name:'Anthracite',        hex:'#3a3a3a', finish:'Gloss',        group:'standard', img:'2024/07/27_2080_g201_3M.jpg'},
+  {code:'G203', name:'Red Metallic',      hex:'#8a2020', finish:'Gloss',        group:'standard'},
+  {code:'G211', name:'Charcoal Metallic', hex:'#444444', finish:'Gloss',        group:'standard'},
+  {code:'G212', name:'Black Metallic',    hex:'#1a1a28', finish:'Gloss',        group:'standard'},
+  {code:'G217', name:'Deep Blue Metallic',hex:'#15224f', finish:'Gloss',        group:'standard', img:'2024/07/21_2080_g217_3M.jpg'},
+  {code:'G227', name:'Blue Metallic',     hex:'#1f3f78', finish:'Gloss',        group:'standard'},
+  {code:'G251', name:'Sterling Silver',   hex:'#9a9ea0', finish:'Gloss',        group:'standard'},
+  {code:'G336', name:'Green Envy',        hex:'#4a7d5a', finish:'Gloss',        group:'standard'},
+  {code:'G337', name:'Blue Fire',         hex:'#2244cc', finish:'Gloss',        group:'standard', img:'2024/07/18_2080_g337_3M.jpg'},
+  {code:'G344', name:'Liquid Copper',     hex:'#b5682a', finish:'Gloss',        group:'standard'},
+  {code:'G348', name:'Fierce Fuchsia',    hex:'#df3f88', finish:'Gloss',        group:'standard'},
+  {code:'G356', name:'Atomic Teal',       hex:'#1f8f8c', finish:'Gloss',        group:'standard'},
+  {code:'G363', name:'Dragon Fire Red',   hex:'#6f1119', finish:'Gloss',        group:'standard'},
+  {code:'G364', name:'Fiery Orange',      hex:'#e84f1c', finish:'Gloss',        group:'standard'},
+  {code:'G377', name:'Cosmic Blue',       hex:'#1a2a5a', finish:'Gloss',        group:'standard'},
+  {code:'G378', name:'Blue Raspberry',    hex:'#2244aa', finish:'Gloss',        group:'standard'},
+
+  /* MATTE */
+  {code:'M10',  name:'White',             hex:'#eceeec', finish:'Matte',        group:'standard'},
+  {code:'M12',  name:'Black',             hex:'#1b1d20', finish:'Matte',        group:'standard', pop:'pop', img:'2024/07/9_2080_m12_3M.jpg'},
+  {code:'M13',  name:'Red',               hex:'#a01010', finish:'Matte',        group:'standard'},
+  {code:'M21',  name:'Silver Metallic',   hex:'#b6bbbd', finish:'Matte',        group:'standard'},
+  {code:'M22',  name:'Deep Black',        hex:'#0d0d0d', finish:'Matte',        group:'standard', img:'2024/07/16_2080_m22_3M.jpg'},
+  {code:'M26',  name:'Military Green',    hex:'#4a5a36', finish:'Matte',        group:'standard'},
+  {code:'M27',  name:'Indigo',            hex:'#3a3a6e', finish:'Matte',        group:'standard'},
+  {code:'M203', name:'Red Metallic',      hex:'#7a1a1a', finish:'Matte',        group:'standard'},
+  {code:'M206', name:'Pine Green Metallic',hex:'#2d5a3d',finish:'Matte',        group:'standard', img:'2024/07/13_2080_m206_3M.jpg'},
+  {code:'M209', name:'Brown Metallic',    hex:'#5e4736', finish:'Matte',        group:'standard'},
+  {code:'M211', name:'Charcoal Metallic', hex:'#3a3a3a', finish:'Matte',        group:'standard'},
+  {code:'M212', name:'Black Metallic',    hex:'#181820', finish:'Matte',        group:'standard'},
+  {code:'M217', name:'Slate Blue Metallic',hex:'#3a4a6e',finish:'Matte',        group:'standard'},
+  {code:'M227', name:'Blue Metallic',     hex:'#2a3a6a', finish:'Matte',        group:'standard'},
+  {code:'M230', name:'Gray Aluminum',     hex:'#888888', finish:'Matte',        group:'standard'},
+  {code:'M261', name:'Dark Gray',         hex:'#555555', finish:'Matte',        group:'standard', pop:'pop', img:'2024/07/19_2080_m261_3M.jpg'},
+  {code:'DM12', name:'Dead Matte Black',  hex:'#0a0a0a', finish:'Dead Matte',   group:'pearl'},
+
+  /* SATIN */
+  {code:'S10',  name:'White',             hex:'#f2f0ee', finish:'Satin',        group:'standard'},
+  {code:'S12',  name:'Black',             hex:'#1e2022', finish:'Satin',        group:'standard', img:'2024/07/12_2080_s12_3M.jpg'},
+  {code:'S51',  name:'Battleship Gray',   hex:'#717880', finish:'Satin',        group:'standard'},
+  {code:'S57',  name:'Key West',          hex:'#8fb7d6', finish:'Satin',        group:'standard'},
+  {code:'S120', name:'White Aluminum',    hex:'#d6d8d6', finish:'Satin',        group:'standard'},
+  {code:'S196', name:'Apple Green',       hex:'#5a9a5a', finish:'Satin',        group:'standard'},
+  {code:'S261', name:'Dark Gray Metallic',hex:'#4a4a50', finish:'Satin',        group:'standard'},
+
+  /* SATIN / PEARL PREMIUM */
+  {code:'S271', name:'Thundercloud',      hex:'#5a6470', finish:'Satin Premium',group:'pearl'},
+  {code:'S327', name:'Ocean Shimmer',     hex:'#4a8ab0', finish:'Satin Premium',group:'pearl'},
+  {code:'S335', name:'Bitter Yellow',     hex:'#c8b820', finish:'Satin Premium',group:'pearl'},
+  {code:'S347', name:'Perfect Blue',      hex:'#2266bb', finish:'Satin Premium',group:'pearl', img:'2024/07/23_2080_s347_3M.jpg'},
+  {code:'S363', name:'Smoldering Red',    hex:'#880011', finish:'Satin Premium',group:'pearl'},
+  {code:'SP10', name:'Pearl White',       hex:'#eceae6', finish:'Satin Pearl',  group:'pearl'},
+  {code:'SP240',name:'Frozen Vanilla',    hex:'#ded7c4', finish:'Satin Pearl',  group:'pearl'},
+  {code:'SP242',name:'Gold Dust Black',   hex:'#2a2820', finish:'Satin Pearl',  group:'pearl'},
+  {code:'SP273',name:'Vampire Red',       hex:'#880011', finish:'Satin Pearl',  group:'pearl', img:'2024/07/11_2080_sp273_3M.jpg'},
+  {code:'GP240',name:'White Gold Sparkle',hex:'#e8d8a0', finish:'Gloss Pearl',  group:'pearl', img:'2024/08/5_2080_gp_240_3M.jpg'},
+  {code:'GP272',name:'Midnight Blue',     hex:'#1a1a3a', finish:'Gloss Pearl',  group:'pearl'},
+  {code:'GP282',name:'Ember Black',       hex:'#1a1010', finish:'Gloss Pearl',  group:'pearl'},
+
+  /* FLIP */
+  {code:'SP236',name:'Volcanic Flare',    hex:'#8B2FBE', finish:'Satin Flip',   group:'flip'},
+  {code:'SP280',name:'Ghost Pearl',       hex:'#c8c8d8', finish:'Satin Flip',   group:'flip'},
+  {code:'SP281',name:'Psychedelic',       hex:'#7B2FBE', finish:'Satin Flip',   group:'flip', img:'2024/07/22_2080_sp281_3M.jpg'},
+  {code:'GP278',name:'Deep Space',        hex:'#1a1a4a', finish:'Gloss Flip',   group:'flip'},
+  {code:'GP281',name:'Psychedelic Gloss', hex:'#6a4aa0', finish:'Gloss Flip',   group:'flip'},
+
+  /* CARBON / TEXTURE / BRUSHED */
+  {code:'CFS12', name:'Carbon Fiber Black',    hex:'#1a1a1a', finish:'Carbon',  group:'carbon', img:'2024/07/4_2080_cfs12_3M.jpg'},
+  {code:'CFS201',name:'Carbon Fiber Anthracite',hex:'#2a2a2a',finish:'Carbon',  group:'carbon'},
+  {code:'SB12',  name:'Shadow Black',          hex:'#111111', finish:'Texture', group:'carbon'},
+  {code:'MX12',  name:'Matrix Black',          hex:'#0d0d0d', finish:'Texture', group:'carbon'},
+  {code:'BR120', name:'Brushed Aluminum',      hex:'#c0c0c0', finish:'Brushed', group:'carbon', img:'2024/07/28_2080_br120_3M.jpg'},
+  {code:'BR201', name:'Brushed Steel',         hex:'#a8a8b0', finish:'Brushed', group:'carbon', img:'2024/07/8_2080_br202_3M.jpg'},
+  {code:'BR212', name:'Brushed Black Metallic',hex:'#2a2a30', finish:'Brushed', group:'carbon'},
+  {code:'BR230', name:'Brushed Titanium',      hex:'#8a8a90', finish:'Brushed', group:'carbon'},
+
+  /* 1080 SERIES */
+  {code:'GP258', name:'Plum Explosion',   hex:'#6600aa', finish:'1080 Pearl',   group:'wrap1080', img:'2024/07/15_2080_gp258_3M.jpg'},
+];
+
+const FINISH_ORDER = ['High Gloss','Gloss','Matte','Dead Matte','Satin','Satin Premium','Satin Pearl','Gloss Pearl','Satin Flip','Gloss Flip','Carbon','Texture','Brushed','1080 Pearl'];
+const FINISH_SHORT = {
+  'High Gloss':'Wysoki Połysk','Gloss':'Połysk','Matte':'Matowy','Dead Matte':'Dead Matte',
+  'Satin':'Satyna','Satin Premium':'Satyna Premium','Satin Pearl':'Satyna Perła',
+  'Gloss Pearl':'Połysk Perła','Satin Flip':'Satin Flip','Gloss Flip':'Gloss Flip',
+  'Carbon':'Carbon','Texture':'Tekstura','Brushed':'Szczotkowany','1080 Pearl':'1080 Perła'
 };
 
-const GROSS_M=67.65, NET_M=55.00, UNIT=3.00;
-let sel=null, steps=10, cat='Popularne';
+/* ─── STATE ─── */
+let selCode   = null;
+let lenSteps  = 10; /* ×10 = cm */
+let curFinish = 'Gloss';
 
-const badgeCls={hot:'badge-hot',pop:'badge-pop',trend:'badge-trend'};
+/* ─── INIT FINISH TABS ─── */
+const finishes = [...new Set(COLORS.map(c=>c.finish))].sort((a,b)=>FINISH_ORDER.indexOf(a)-FINISH_ORDER.indexOf(b));
 
-function rCats(){
-  const el=document.getElementById('cats');
-  el.innerHTML=Object.keys(colors).map(c=>
-    `<div class="cat-btn${c===cat?' active':''}" data-c="${c}">${c}</div>`
+function renderTabs(){
+  const el = document.getElementById('finishTabs');
+  el.innerHTML = finishes.map(f =>
+    `<button class="ftab${f===curFinish?' active':''}" onclick="setFinish('${f}')">${FINISH_SHORT[f]||f}</button>`
   ).join('');
-  el.querySelectorAll('.cat-btn').forEach(b=>b.addEventListener('click',()=>{cat=b.dataset.c;rCats();rGrid();}));
 }
 
-function rGrid(){
-  const el=document.getElementById('grid');
-  el.innerHTML=colors[cat].map(c=>`
-    <div class="color-tile${sel&&sel.id===c.id&&sel.cat===cat?' sel':''}" data-id="${c.id}" data-cat="${cat}">
-      <img src="${c.img}" alt="${c.id}" loading="lazy" onerror="this.style.background='${c.hex}';this.src=''">
-      <div class="color-tile-body">
-        <div class="color-tile-id">${c.id}</div>
-        <div class="color-tile-name">${c.name}</div>
-      </div>
-      ${c.badge?`<div class="badge ${badgeCls[c.badge]}">${c.bLabel}</div>`:''}
-      <div class="check-badge">
-        <svg viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="2,7 6,11 12,3"/></svg>
-      </div>
-    </div>`
-  ).join('');
-  el.querySelectorAll('.color-tile').forEach(t=>t.addEventListener('click',()=>{
-    const c=colors[t.dataset.cat].find(x=>x.id===t.dataset.id);
-    sel={...c, cat:t.dataset.cat};
-    rGrid(); upStrip(); upCalc();
-  }));
+function setFinish(f){ curFinish=f; renderTabs(); renderGrid(); }
+
+/* ─── COLOR GRID ─── */
+function renderGrid(){
+  const cols = COLORS.filter(c=>c.finish===curFinish);
+  document.getElementById('colorGrid').innerHTML = cols.map(c => {
+    const img = c.img ? `<img src="${IMG_BASE}${c.img}" alt="${c.code}" style="width:100%;height:40px;object-fit:cover;display:block" loading="lazy" onerror="this.style.display='none'">` : '';
+    const dot = `<div class="swatch-dot" style="background:${c.hex};${img?'display:none':''}"></div>`;
+    const pop = c.pop==='hot' ? '<div class="pop-badge pop-hot">★ TOP</div>' : c.pop==='pop' ? '<div class="pop-badge pop-pop">HIT</div>' : '';
+    return `<div class="color-swatch${c.code===selCode?' sel':''}" onclick="selectColor('${c.code}')" title="${c.code} ${c.name}">
+      ${img || dot}
+      <div class="swatch-code">${c.code}</div>
+      ${pop}
+      <div class="check-ico"><svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="2,6 5,10 10,2"/></svg></div>
+    </div>`;
+  }).join('');
 }
 
-function upStrip(){
-  const el=document.getElementById('selStrip');
-  if(!sel){el.style.display='none';return;}
-  el.style.display='flex';
-  const img=document.getElementById('stripImg');
-  img.src=sel.img; img.onerror=()=>{img.style.background=sel.hex;img.src='';};
-  document.getElementById('stripName').textContent=sel.id+' '+sel.name;
-  document.getElementById('stripCat').textContent=sel.cat+' · Folia 3M seria 2080';
+/* ─── SELECT COLOR ─── */
+function selectColor(code){
+  selCode = code;
+  renderGrid();
+  const c = COLORS.find(x=>x.code===code);
+  const prev = document.getElementById('selPreview');
+  prev.style.display='flex';
+  document.getElementById('selDot').style.background = c.hex;
+  document.getElementById('selName').textContent = c.code+' '+c.name;
+  document.getElementById('selCat').textContent = c.finish+' · '+GROUPS[c.group].label;
+  calc();
 }
 
-function fmt(n){return n.toFixed(2).replace('.',',');}
+/* ─── CALC ─── */
+function fmt(n){ return n.toFixed(2).replace('.',','); }
 
-function upCalc(){
-  const cm=steps*10, m=cm/100, area=1.52*m;
-  const gross=GROSS_M*m, net=NET_M*m;
-  const units=Math.ceil(gross/UNIT), total=units*UNIT;
+function calc(){
+  const lenCm = lenSteps*10;
+  const lenM  = lenCm/100;
+  const area  = ROLL_W * lenM;
 
-  document.getElementById('lenBig').innerHTML=cm+'<span class="len-unit"> cm</span>';
-  document.getElementById('detDim').textContent=`152×${cm} cm`;
-  document.getElementById('detArea').textContent=(area).toFixed(2).replace('.',',')+' m²';
-  document.getElementById('detGross').textContent=fmt(gross)+' zł';
-  document.getElementById('detNet').textContent='netto: '+fmt(net)+' zł';
+  document.getElementById('lenBig').textContent = lenCm;
+  document.getElementById('pDim').textContent   = `152 × ${lenCm} cm`;
+  document.getElementById('pArea').textContent  = area.toFixed(2).replace('.',',')+' m²';
 
-  const main=document.getElementById('alMain');
-  if(!sel){
-    main.className='al-main inactive';
-    document.getElementById('alNum').textContent='—';
-    document.getElementById('alSub').textContent='Wybierz kolor i długość';
-    document.getElementById('alTotal').textContent='— zł';
-    document.getElementById('hintUnits').textContent='podaną liczbę jednostek';
-    document.getElementById('copyText').textContent='Wybierz kolor i długość, aby wygenerować treść wiadomości do sprzedawcy.';
-  } else {
-    main.className='al-main';
-    document.getElementById('alNum').textContent=units;
-    document.getElementById('alSub').textContent=`${sel.id} ${sel.name} · ${cm} cm · dodaj ${units} szt. do koszyka`;
-    document.getElementById('alTotal').textContent=fmt(total)+' zł';
-    document.getElementById('hintUnits').textContent=units+' szt.';
-    document.getElementById('copyText').textContent=
-      `Zamawiam: ${sel.id} ${sel.name}, długość: ${cm} cm, szerokość: 152 cm. Liczba jednostek w koszyku: ${units}.`;
+  const btn = document.getElementById('btnAllegro');
+
+  if(!selCode){
+    document.getElementById('pNetto').textContent  = '— zł';
+    document.getElementById('pBrutto').textContent = '— zł';
+    document.getElementById('alMain').className = 'al-main dim';
+    document.getElementById('alNum').textContent  = '—';
+    document.getElementById('alSub').textContent  = 'Wybierz kolor i długość';
+    document.getElementById('alTotal').textContent= '— zł';
+    document.getElementById('copyText').textContent = 'Wybierz kolor i długość, aby wygenerować wiadomość.';
+    document.getElementById('hintUnits').textContent = 'podaną liczbę jednostek';
+    btn.className = 'btn-allegro dim';
+    return;
   }
+
+  const c = COLORS.find(x=>x.code===selCode);
+  const g = GROUPS[c.group];
+  const netto  = g.netto_m2 * ROLL_W * lenM;
+  const gross  = netto * (1+VAT);
+  const units  = Math.ceil(gross / UNIT);
+  const total  = units * UNIT;
+
+  document.getElementById('priceGroup').textContent = g.label+' — '+fmt(g.netto_m2)+' zł/m² netto';
+  document.getElementById('pNetto').textContent  = fmt(netto)+' zł';
+  document.getElementById('pBrutto').textContent = fmt(gross)+' zł';
+  document.getElementById('alMain').className = 'al-main';
+  document.getElementById('alNum').textContent  = units;
+  document.getElementById('alSub').textContent  = c.code+' '+c.name+' · '+lenCm+' cm · dodaj '+units+' szt.';
+  document.getElementById('alTotal').textContent= fmt(total)+' zł';
+  document.getElementById('hintUnits').textContent = units+' szt.';
+  btn.className = 'btn-allegro';
+
+  const msg = `Zamawiam: ${c.code} ${c.name} (${c.finish}), długość: ${lenCm} cm, szerokość: 152 cm. Liczba jednostek w koszyku: ${units}.`;
+  document.getElementById('copyText').textContent = msg;
 }
 
-document.getElementById('sl').addEventListener('input',e=>{
-  steps=parseInt(e.target.value);
-  document.querySelectorAll('.preset-btn').forEach(p=>p.classList.remove('ap'));
-  upCalc();
+/* ─── SLIDER ─── */
+document.getElementById('slider').addEventListener('input', e=>{
+  lenSteps = parseInt(e.target.value);
+  document.querySelectorAll('.preset').forEach(p=>p.classList.remove('ap'));
+  calc();
 });
 
-document.querySelectorAll('.preset-btn').forEach(p=>p.addEventListener('click',()=>{
-  steps=parseInt(p.dataset.v);
-  document.getElementById('sl').value=steps;
-  document.querySelectorAll('.preset-btn').forEach(x=>x.classList.remove('ap'));
-  p.classList.add('ap');
-  upCalc();
-}));
+document.querySelectorAll('.preset').forEach(p=>{
+  p.addEventListener('click', ()=>{
+    lenSteps = parseInt(p.dataset.v);
+    document.getElementById('slider').value = lenSteps;
+    document.querySelectorAll('.preset').forEach(x=>x.classList.remove('ap'));
+    p.classList.add('ap');
+    calc();
+  });
+});
 
-function doCopy(){
-  const txt=document.getElementById('copyText').textContent;
-  navigator.clipboard.writeText(txt).catch(()=>{});
-  const btn=document.getElementById('copyBtn');
-  btn.textContent='Skopiowano!';
-  btn.classList.add('copied');
-  setTimeout(()=>{btn.textContent='Kopiuj wiadomość';btn.classList.remove('copied');},2000);
+/* ─── GO TO LISTING ─── */
+function goToListing(){
+  if(!selCode) return;
+  const txt = document.getElementById('copyText').textContent;
+  const units = document.getElementById('alNum').textContent;
+  // Copy units to clipboard
+  const copyVal = units+' szt.';
+  navigator.clipboard.writeText(copyVal).catch(()=>{
+    const ta = document.createElement('textarea');
+    ta.value = copyVal;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+  showToast(`Skopiowano: ${copyVal} — otwieram Allegro`);
+  setTimeout(()=>{ window.open(ALLEGRO_URL,'_blank'); }, 400);
 }
 
-rCats(); rGrid(); upCalc();
+/* ─── COPY MESSAGE ─── */
+function doCopy(){
+  const txt = document.getElementById('copyText').textContent;
+  navigator.clipboard.writeText(txt).catch(()=>{
+    const ta = document.createElement('textarea');
+    ta.value = txt;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+  const btn = document.getElementById('copyBtn');
+  btn.textContent = 'Skopiowano!';
+  btn.classList.add('done');
+  setTimeout(()=>{ btn.textContent='Kopiuj'; btn.classList.remove('done'); },2000);
+}
+
+/* ─── TOAST ─── */
+function showToast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast';
+  void el.offsetWidth;
+  el.className = 'toast show';
+}
+
+/* ─── THEME ─── */
+function toggleTheme(){
+  const isDark = document.documentElement.dataset.theme==='dark';
+  document.documentElement.dataset.theme = isDark?'light':'dark';
+  document.getElementById('themeBtn').textContent = isDark?'🌙':'☀️';
+}
+
+/* ─── BOOT ─── */
+renderTabs();
+renderGrid();
+calc();
 </script>
 </body>
 </html>
